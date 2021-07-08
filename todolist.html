@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- cdn Bootstrap v5.0 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <title>ToDoList</title>
+    </head>
+
+    <body>
+        <!-- navbar  -->
+        <nav class="navbar navbar-light bg-dark">
+            <div class="container-fluid">
+              <span class="navbar-brand mb-0 h1  text-light"> - ToDoList - </span>
+            </div>
+          </nav>
+          <!-- contenitore per l'input e il tasto che aggiunge le task -->
+          <div class="input-group p-4">
+            <input type="text" id="text" class="form-control" placeholder="Cose da fare.. " >
+            <span class="input-group-text bg-primary text-white" id="btn"> Aggiungi </span>
+          </div>
+
+        <div>
+            <ul id="lista" class="list-group list-group-flush ">
+               <!-- con javascript, al click del tasto aggiungi:
+                - Creo un list item che si aggiunge qua;
+                - Aggiungo al local storage l'elemento -->
+            </ul>
+        </div>
+
+        <script>
+            // variabili 
+            var btn; //bottone
+            var text; //input valeue
+            var unList; //unorderedList -- <ul>
+            var miaLista = []; //array vuoto che mi serve per il local storage
+            
+            window.addEventListener('load', init);
+
+            function init (){
+                btn = document.getElementById('btn');
+                text = document.getElementById('text');
+                unList = document.getElementById('lista');
+                checkData(); //x local storage
+                eventHandlers();
+            }
+
+            function eventHandlers (){
+                btn.addEventListener('click', addTask);
+            }
+            function addTask(){
+                miaLista.push(text.value);
+
+                buildList();
+                clearInput(); // pulire l'input
+                saveData(); //per local storage
+            }
+
+            function checkData(){
+                if(localStorage.getItem('cose da fare')){
+                    miaLista = localStorage.getItem('cose da fare').split(",");
+                }
+                buildList();
+            }
+
+            function buildList(){
+                var elenco = "";
+                for (var i = 0; i < miaLista.length; i++) {
+                    elenco += '<li class="list-group-item m-4 position-relative">' + miaLista[i] + '<span onclick="eliminaTask('+i+')" class="btn btn-primary position-absolute top-0 end-0"> Elimina </span> </li>';
+                }
+                unList.innerHTML = elenco;
+            }
+
+            // clearInput(); // pulire l'input
+            //saveData(); //per local storage
+            //eliminaTask('+i+') -- il singolo elemento
+
+            function clearInput (){
+                text.value = " ";
+            }
+
+            function saveData(){
+                localStorage.setItem('cose da fare', miaLista);
+            }
+
+            function eliminaTask(el){
+                miaLista.splice(el, 1);
+                saveData();
+                buildList();
+            }
+
+        </script>
+    </body>
+</html>
