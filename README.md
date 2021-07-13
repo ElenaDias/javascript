@@ -1,2 +1,2 @@
 # javascript
-To do list
+esercitazioni con JavaScript
