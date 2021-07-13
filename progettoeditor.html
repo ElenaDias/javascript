@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>SPA Blog - Editor</title>
+    <style>
+        li {
+            list-style: none;
+        }
+
+        ;
+
+        div.list-group-item.closeDiv {
+            display: hidden !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-warning">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">SPA Blog - Editor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <form class="d-flex">
+                    <input id="testoRicerca" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button id="cerca" class="btn btn-outline-dark" type="submit">Cerca</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-2">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- INPUT -->
+                <div class="input-group my-4">
+                    <span class="input-group-text bg-dark text-warning">Titolo</span>
+                    <input id="titolo" type="text" class="form-control" placeholder="Scrivi il tuo titolo">
+                </div>
+                <!-- TEXTAREA TEXT  -->
+                <div class="form-floating">
+                    <textarea id="textarea" class="form-control" style="height: 200px"></textarea>
+                </div>
+                <!-- BOTTONI eventi click -->
+                <div class="d-grid gap-2 d-md-block my-3 " role="group" aria-label="Basic example">
+                    <button id="nuovo" type="button" class="btn btn-warning">Crea nuovo</button>
+                    <button id="salva" type="button" class="btn btn-dark">Salva</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Colonna dove compariranno titoli e testi -->
+                <div>
+                    <h2 class="my-4">I tuoi Post</h2>
+                    <ul class="list-group">
+                    </ul>
+                </div>
+                <div class="list-group-item closeDiv p-2">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class Post {
+            constructor(titolo, contenuto) {
+                this.titolo = titolo;
+                this.contenuto = contenuto;
+            }
+        }
+
+        var posts = [];
+        //************ il bottone SALVA:::: 
+        const btnSalva = document.querySelector('#salva');
+        btnSalva.addEventListener('click', () => {
+            const titolo = document.querySelector('#titolo').value;
+            const contenuto = document.querySelector('#textarea').value;
+            //istanzio la Classe Post
+            let singoloPost = new Post(titolo, contenuto);
+            //i value vanno nel local storage e nell'array post inizializzato  vuoto
+            posts.push(singoloPost);
+            localStorage.setItem('post', JSON.stringify(posts));
+            //creo una funzione che mi crea la lista dei post che vengono aggiunti
+            creaElencoConTuttiPost();
+        });
+
+        function creaElencoConTuttiPost() {
+            const wrapper = document.querySelector('ul');
+            wrapper.innerHTML = '';
+            posts.forEach((post, index) => {
+                creaSpazioSingleItem(post, wrapper, index);
+            });
+        }
+        function creaSpazioSingleItem(post, wrapper, index) {
+            console.log(post, wrapper, index);
+            let line = document.createElement("li");
+            console.log(line);
+            line.innerHTML = `<li onclick="creaCardContenutoPost(${index})" class="list-group-item">${post.titolo} </li>`;
+            wrapper.appendChild(line);
+        }
+
+        function creaCardContenutoPost(index) {
+            // var mostraDiv = document.querySelector('.closeDiv');
+            // mostraDiv.style.display = "block";
+            let fineElenco = document.querySelector('ul');
+            var contenitore = document.querySelector('.closeDiv');
+            //contenitore.innerHTML = '';
+            posts.forEach((testo, index) => {
+                contenitore.innerHTML = `${testo.contenuto} <div><span onclick="closeDiv(${index})" class="btn btn-outline-warning"> Chiudi </span></div>`;
+            });
+            fineElenco.appendChild(contenitore);
+        }
+
+        function closeDiv(index) {
+            var nascondiDiv = document.querySelector('.closeDiv');
+            nascondiDiv.style.display = "none";
+        }
+
+        //************ il bottone NUOVO POST :::: 
+        const btnNuovo = document.querySelector('#nuovo');
+        btnNuovo.addEventListener('click', function () {
+            document.querySelector('#titolo').value = " ";
+            document.querySelector('#textarea').value = " ";
+        });
+
+        //************ il bottone CERCA :::: 
+        const btnCerca = document.querySelector('#cerca');
+
+        btnCerca.addEventListener('click', (e) => {
+            e.preventDefault();
+            const testoRicerca = document.querySelector('#testoRicerca').value;
+            console.log(testoRicerca);
+
+            //CREO nuovo ARRAY RICERCHE NELLA BARRA DI RICERCA: come esercizio del prof, dico che se i
+            let searchResults = [];
+            //ciclo for each per andara a stampare Post 
+            posts.forEach((post) => {
+                if (post.titolo.indexOf(testoRicerca) > -1) { 
+                    //ARRAY VANNO DA 0 A "INFINITO" COME INDICE; -1 SIGNIFICA CHE NON ESISTE
+                    searchResults.push(post);
+                }
+            });
+            const wrapper = document.querySelector('ul');
+            wrapper.innerHTML = '';
+            searchResults.forEach((post) => {
+                creaSpazioSingleItem(post, wrapper);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
